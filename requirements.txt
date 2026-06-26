@@ -1,0 +1,15 @@
+Django>=4.2,<5.0
+Pillow>=11.0
+python-dotenv>=1.0
+psycopg2-binary
+pgvector
+requests
+groq
+python-multipart
+jinja2
+pypdf
+dj-database-url
+whitenoise
+gunicorn
+cloudinary
+django-cloudinary-storage

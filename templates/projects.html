@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+{% load static media_optimizations %}
+
+{% block title %}Projects | Portfolio, Machine Learning and Django Work{% endblock %}
+{% block meta_description %}Browse projects by Portfolio Owner across machine learning, AI applications, Django development, Python backends, and full-stack engineering.{% endblock %}
+{% block og_title %}Portfolio Owner Projects | Machine Learning, AI, Django{% endblock %}
+{% block og_description %}Browse Portfolio Owner's machine learning, AI, Django, Python backend, and full-stack engineering projects.{% endblock %}
+{% block tw_title %}Portfolio Owner Projects | Machine Learning, AI, Django{% endblock %}
+{% block tw_description %}Machine learning, AI, Django, Python backend, and full-stack projects by Portfolio Owner.{% endblock %}
+{% block canonical %}{{ site_url }}{% url 'projects' %}{% if selected_category %}?category={{ selected_category }}{% endif %}{% if page_obj.number > 1 %}{% if selected_category %}&{% else %}?{% endif %}page={{ page_obj.number }}{% endif %}{% endblock %}
+{% block structured_data %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": "Portfolio Owner Projects",
+  "url": "{{ current_url }}",
+  "description": "Project collection featuring machine learning, Django, Python, and software engineering work by Portfolio Owner."
+}
+</script>
+{% endblock %}
+
+{% block content %}
+
+<!-- Page Hero -->
+<section class="relative pt-40 pb-20 px-6 overflow-hidden">
+  <div class="absolute inset-0" style="background: linear-gradient(to bottom, rgba(249,115,22,0.04) 0%, #0a0a0a 100%);"></div>
+  <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-portfolio-orange/40 to-transparent"></div>
+  <div class="max-w-7xl mx-auto relative z-10">
+    <div class="section-label">My Work</div>
+    <h1 class="portfolio-heading portfolio-text-shadow text-white" style="font-size: clamp(3rem, 8vw, 6rem);">
+      All <span class="text-portfolio-orange">Projects</span>
+    </h1>
+    <p class="text-white/40 text-sm tracking-wide mt-3 max-w-xl">
+      A full collection of my projects - from web apps to open source contributions.
+    </p>
+  </div>
+</section>
+
+<!-- Projects Main -->
+<section class="pb-28 px-6">
+  <div class="max-w-7xl mx-auto">
+
+    <!-- Category Filter -->
+    {% if categories %}
+    <div class="flex flex-wrap gap-3 mb-12 reveal">
+      <button class="filter-btn active" data-category="all" id="filter-all">All</button>
+      {% for cat in categories %}
+      <button class="filter-btn {% if selected_category == cat.slug %}active{% endif %}"
+              data-category="{{ cat.slug }}"
+              id="filter-{{ cat.slug }}">
+        {{ cat.name }}
+      </button>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if page_obj %}
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6" id="projects-grid">
+      {% for project in page_obj %}
+      <div class="project-card project-item reveal" data-delay="{{ forloop.counter0 }}00"
+           data-category="{{ project.category.slug|default:'all' }}">
+        <!-- Image -->
+        <div class="project-card-image">
+          {% if project.image %}
+          <a href="{% url 'project_detail' project.slug %}">
+            <img src="{{ project.image.url|cloudinary_auto:720 }}" alt="{{ project.title }}" loading="lazy" decoding="async" />
+          </a>
+          {% else %}
+          <div class="project-no-image">
+            <span>{% cycle '*' '' '*' '*' '*' %}</span>
+          </div>
+          {% endif %}
+          <div class="project-overlay">
+            {% if project.live_url %}
+            <a href="{{ project.live_url }}" target="_blank" rel="noopener"
+               class="flex items-center justify-center w-10 h-10 bg-portfolio-orange text-black hover:bg-portfolio-gold transition-colors"
+               id="proj-{{ project.id }}-live" aria-label="Live demo">
+              <i class="fas fa-external-link-alt text-sm"></i>
+            </a>
+            {% endif %}
+            {% if project.github_url %}
+            <a href="{{ project.github_url }}" target="_blank" rel="noopener"
+               class="flex items-center justify-center w-10 h-10 border border-white/40 text-white hover:border-portfolio-orange hover:text-portfolio-orange transition-colors"
+               id="proj-{{ project.id }}-github" aria-label="GitHub">
+              <i class="fab fa-github text-sm"></i>
+            </a>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Content -->
+        <div class="p-5">
+          <div class="flex items-start justify-between gap-2 mb-1">
+            {% if project.category %}
+            <span class="text-xs text-portfolio-orange/70 tracking-widest uppercase font-semibold">
+              {{ project.category.name }}
+            </span>
+            {% endif %}
+            {% if project.featured %}
+            <span class="text-xs bg-portfolio-orange/20 text-portfolio-orange border border-portfolio-orange/30 px-2 py-0.5 tracking-widest uppercase"
+                  style="font-size: 0.6rem;">
+              Featured
+            </span>
+            {% endif %}
+          </div>
+          <h3 class="text-white font-bold text-base mb-2 leading-tight">
+             <a href="{% url 'project_detail' project.slug %}" class="hover:text-portfolio-orange transition-colors">{{ project.title }}</a>
+          </h3>
+          <p class="text-white/50 text-xs leading-relaxed mb-4">{{ project.short_description }}</p>
+          {% if project.tech_stack %}
+          <div class="flex flex-wrap gap-1.5">
+            {% for tech in project.get_tech_list %}
+            <span class="tech-badge">{{ tech }}</span>
+            {% endfor %}
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+    <div class="flex justify-center gap-2 mt-16">
+      {% if page_obj.has_previous %}
+      <a href="?page={{ page_obj.previous_page_number }}{% if selected_category %}&category={{ selected_category }}{% endif %}"
+         class="btn-portfolio-secondary text-sm" id="page-prev">
+        <i class="fas fa-chevron-left text-xs"></i> Prev
+      </a>
+      {% endif %}
+      <span class="flex items-center px-4 py-2 text-white/40 text-sm border border-white/10">
+        {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
+      </span>
+      {% if page_obj.has_next %}
+      <a href="?page={{ page_obj.next_page_number }}{% if selected_category %}&category={{ selected_category }}{% endif %}"
+         class="btn-portfolio-primary text-sm" id="page-next">
+        Next <i class="fas fa-chevron-right text-xs"></i>
+      </a>
+      {% endif %}
+    </div>
+    {% endif %}
+
+    {% else %}
+    <div class="text-center py-28">
+      <i class="fas fa-briefcase text-portfolio-orange/20" style="font-size: 5rem;"></i>
+      <p class="text-white/30 text-sm tracking-widest uppercase mt-6">No projects found</p>
+      <a href="{{ admin_url }}" class="btn-portfolio-primary text-sm mt-6 inline-flex">Add Projects in Admin</a>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Activate filter from URL param
+  const urlParams = new URLSearchParams(window.location.search);
+  const cat = urlParams.get('category');
+  if (cat) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    const btn = document.querySelector(`.filter-btn[data-category="${cat}"]`);
+    if (btn) btn.classList.add('active');
+  }
+</script>
+{% endblock %}

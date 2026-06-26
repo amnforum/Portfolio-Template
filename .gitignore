@@ -1,0 +1,50 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# Environment files and secrets
+.env
+.env.local
+.env.*.local
+!.env.example
+local_settings.py
+
+# Django local files
+db.sqlite3
+db.sqlite3-journal
+staticfiles/
+media/
+knowledge_docs/
+
+# Node / Tailwind
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+
+# Deployment metadata
+.vercel/
+
+# Logs
+*.log
+logs.json
+
+# Editors / OS
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db

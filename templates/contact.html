@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Contact Portfolio Owner | Machine Learning Engineer and Django Developer{% endblock %}
+{% block meta_description %}Contact Portfolio Owner for machine learning, AI, Django, Python backend, and full-stack web development projects or collaborations.{% endblock %}
+{% block canonical %}{{ site_url }}{% url 'contact' %}{% endblock %}
+{% block og_title %}Contact Portfolio Owner | Machine Learning Engineer{% endblock %}
+{% block og_description %}Use the contact page to reach Portfolio Owner for AI, ML, Django, Python, and web development work.{% endblock %}
+{% block tw_title %}Contact Portfolio Owner | Machine Learning Engineer{% endblock %}
+{% block tw_description %}Contact Portfolio Owner for AI, ML, Django, Python backend, and web development projects.{% endblock %}
+{% block structured_data %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ContactPage",
+  "name": "Contact Portfolio Owner",
+  "url": "{{ site_url }}{% url 'contact' %}",
+  "description": "Contact Portfolio Owner for machine learning, AI, Django, Python backend, and web development projects.",
+  "mainEntity": {
+    "@type": "Person",
+    "name": "Portfolio Owner",
+    "email": "{{ profile.email|default:''|escapejs }}",
+    "url": "{{ site_url }}/"
+  }
+}
+</script>
+{% endblock %}
+
+{% block content %}
+
+<!-- Hero -->
+<section class="relative pt-40 pb-20 px-6 overflow-hidden">
+  <div class="absolute inset-0" style="background: radial-gradient(ellipse at top center, rgba(249,115,22,0.06) 0%, #0a0a0a 70%);"></div>
+  <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-portfolio-orange/40 to-transparent"></div>
+  <div class="max-w-7xl mx-auto relative z-10">
+    <div class="section-label">Get In Touch</div>
+    <h1 class="portfolio-heading portfolio-text-shadow text-white" style="font-size: clamp(3rem, 8vw, 6rem);">
+      Start A <span class="text-portfolio-orange">Mission</span>
+    </h1>
+    <p class="text-white/40 text-sm mt-4 max-w-lg tracking-wide">
+      Have a project or an idea you want to bring to life? Let's talk.
+    </p>
+  </div>
+</section>
+
+<!-- Contact Content -->
+<section class="pb-28 px-6">
+  <div class="max-w-6xl mx-auto">
+    <div class="grid md:grid-cols-5 gap-12">
+
+      <!-- Info column -->
+      <div class="md:col-span-2 reveal from-left">
+        <!-- Cards -->
+        <div class="space-y-4 mb-10">
+          {% if profile.email %}
+          <div class="about-card">
+            <div class="flex items-center gap-4">
+              <i class="fas fa-envelope text-portfolio-orange text-xl"></i>
+              <div>
+                <p class="text-white/40 text-xs uppercase tracking-widest mb-1">Email</p>
+                <a href="mailto:{{ profile.email }}" class="text-white text-sm font-medium hover:text-portfolio-orange transition-colors">
+                  {{ profile.email }}
+                </a>
+              </div>
+            </div>
+          </div>
+          {% endif %}
+
+          {% if profile.location %}
+          <div class="about-card">
+            <div class="flex items-center gap-4">
+              <i class="fas fa-map-marker-alt text-portfolio-orange text-xl"></i>
+              <div>
+                <p class="text-white/40 text-xs uppercase tracking-widest mb-1">Location</p>
+                <p class="text-white text-sm font-medium">{{ profile.location }}</p>
+              </div>
+            </div>
+          </div>
+          {% endif %}
+
+          <div class="about-card">
+            <div class="flex items-center gap-4">
+              <i class="fas fa-clock text-portfolio-orange text-xl"></i>
+              <div>
+                <p class="text-white/40 text-xs uppercase tracking-widest mb-1">Response</p>
+                <p class="text-white text-sm font-medium">Within 24 hours</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="about-card">
+            <div class="flex items-center gap-4">
+              <i class="fas fa-circle text-green-400 text-xs animate-pulse"></i>
+              <div>
+                <p class="text-white/40 text-xs uppercase tracking-widest mb-1">Status</p>
+                <p class="text-white text-sm font-medium">Open to opportunities</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Social -->
+        <div class="orange-line"></div>
+        <p class="text-white/40 text-xs uppercase tracking-widest mb-4">Find Me On</p>
+        <div class="flex gap-3">
+          {% if profile.github %}<a href="{{ profile.github }}" target="_blank" class="social-link" id="contact-page-github"><i class="fab fa-github"></i></a>{% endif %}
+          {% if profile.linkedin %}<a href="{{ profile.linkedin }}" target="_blank" class="social-link" id="contact-page-linkedin"><i class="fab fa-linkedin-in"></i></a>{% endif %}
+          {% if profile.twitter %}<a href="{{ profile.twitter }}" target="_blank" class="social-link" id="contact-page-twitter"><i class="fab fa-x-twitter"></i></a>{% endif %}
+        </div>
+      </div>
+
+      <!-- Form -->
+      <div class="md:col-span-3 reveal from-right">
+        <form method="post" action="#contact-form" id="contact-form"
+              style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 2rem;">
+          {% csrf_token %}
+          <h3 class="portfolio-heading text-white text-2xl mb-6 tracking-widest">Send A Message</h3>
+
+          <div class="grid md:grid-cols-2 gap-5 mb-5">
+            <div>
+              <label for="contact-name" class="contact-input-label">Name</label>
+              {{ contact_form.name }}
+              {% if contact_form.name.errors %}<p class="text-red-400 text-xs mt-1">{{ contact_form.name.errors.0 }}</p>{% endif %}
+            </div>
+            <div>
+              <label for="contact-email" class="contact-input-label">Email</label>
+              {{ contact_form.email }}
+              {% if contact_form.email.errors %}<p class="text-red-400 text-xs mt-1">{{ contact_form.email.errors.0 }}</p>{% endif %}
+            </div>
+          </div>
+
+          <div class="mb-5">
+            <label for="contact-subject" class="contact-input-label">Subject</label>
+            {{ contact_form.subject }}
+            {% if contact_form.subject.errors %}<p class="text-red-400 text-xs mt-1">{{ contact_form.subject.errors.0 }}</p>{% endif %}
+          </div>
+
+          <div class="mb-6">
+            <label for="contact-message" class="contact-input-label">Message</label>
+            {{ contact_form.message }}
+            {% if contact_form.message.errors %}<p class="text-red-400 text-xs mt-1">{{ contact_form.message.errors.0 }}</p>{% endif %}
+          </div>
+
+          <button type="submit" id="submit-btn"
+                  class="btn-portfolio-primary w-full justify-center text-base">
+            <i class="fas fa-paper-plane text-sm"></i>
+            Fire Off Message
+          </button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+{% endblock %}

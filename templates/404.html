@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="min-h-[80vh] flex flex-col items-center justify-center text-center p-6 relative overflow-hidden">
+    <!-- Checkered Background Decoration -->
+    <div class="absolute inset-0 portfolio-deco opacity-5 pointer-events-none"></div>
+
+    <div class="relative z-10 animate-fade-in">
+        <h1 class="portfolio-heading text-[10rem] md:text-[15rem] leading-none text-portfolio-orange animate-pulse opacity-20 absolute -top-20 left-1/2 -translate-x-1/2 select-none">
+            404
+        </h1>
+        
+        <div class="pet-container mx-auto mb-8 scale-150">
+             <div id="kurama-sprite" class="assistant-angry w-[60px] h-[60px] mx-auto"></div>
+        </div>
+
+        <h2 class="portfolio-heading text-4xl md:text-6xl text-white mb-6 tracking-tighter">PAGE NOT FOUND</h2>
+        
+        <div class="max-w-md mx-auto mb-10">
+            <p class="text-portfolio-gold font-bold uppercase tracking-[0.2em] text-sm mb-4">"Lost in the Mist..."</p>
+            <p class="text-gray-400 text-sm leading-relaxed">
+                It seems you've wandered into a restricted zone. This section of the domain is still being forged, or perhaps it was never meant to be seen.
+                Let's head back to the master's main scrolls before the chakra fades.
+            </p>
+        </div>
+
+        <a href="{% url 'home' %}" class="btn-portfolio-primary group">
+            <i class="fas fa-home mr-3 group-hover:-translate-x-1 transition-transform"></i> BACK TO DOMAIN
+        </a>
+    </div>
+</div>
+
+<script>
+    // Force Kurama to look annoyed on 404
+    document.addEventListener('DOMContentLoaded', () => {
+        const sprite = document.getElementById('kurama-sprite');
+        if (sprite) sprite.className = 'assistant-angry';
+    });
+</script>
+{% endblock %}

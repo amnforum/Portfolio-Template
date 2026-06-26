@@ -1,0 +1,499 @@
+{% extends "base.html" %}
+{% load static media_optimizations %}
+
+{% block title %}Portfolio Owner | Machine Learning Engineer, AI Developer, Django Developer in Remote{% endblock %}
+{% block meta_description %}Explore Portfolio Owner's portfolio as a machine learning engineer and AI developer in Remote. View ML, Python, Django, and full-stack projects, skills, GitHub, and LinkedIn.{% endblock %}
+{% block canonical %}{{ site_url }}/{% endblock %}
+{% block og_title %}Portfolio Owner | Machine Learning Engineer in Remote{% endblock %}
+{% block og_description %}Machine learning engineer and AI developer building ML systems, Django apps, and production-ready software in Remote.{% endblock %}
+{% block tw_title %}Portfolio Owner | Machine Learning Engineer in Remote{% endblock %}
+{% block tw_description %}Portfolio of Portfolio Owner featuring machine learning, AI engineering, Django development, and software projects in Remote.{% endblock %}
+{% block schema_description %}Portfolio Owner is a machine learning engineer in Remote focused on AI applications, Django backends, and production software engineering.{% endblock %}
+{% block structured_data %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Portfolio",
+  "url": "{{ site_url }}/",
+  "description": "Portfolio of Portfolio Owner, machine learning engineer and AI developer in Remote.",
+  "image": "{{ site_url }}{% static 'images/hero-bg.png' %}",
+  "publisher": {
+    "@type": "Person",
+    "name": "Portfolio Owner"
+  }
+}
+</script>
+{% endblock %}
+
+{% block content %}
+
+<!-- ====================================================
+     HERO SECTION
+     ==================================================== -->
+<section id="hero" class="relative min-h-screen flex items-end pb-32">
+  <!-- Background Image -->
+  <div class="hero-bg"></div>
+  <!-- Gradient overlays -->
+  <div class="hero-overlay"></div>
+  <div class="hero-side-gradient"></div>
+
+  <div class="hero-content max-w-7xl mx-auto px-6 w-full">
+    <!-- Tagline pill -->
+    <div class="hero-tagline hero-animate-1">
+      Available for hire
+    </div>
+
+    <!-- Name -->
+    <h1 class="portfolio-heading portfolio-text-shadow text-white hero-animate-2"
+        style="font-size: clamp(3.5rem, 10vw, 8rem); max-width: 900px; line-height: 1; margin-bottom: 0.75rem;">
+      {{ profile.name|default:"PORTFOLIO OWNER" }}
+    </h1>
+
+    <!-- Typed role -->
+    <div class="hero-animate-3 mb-6" style="font-size: clamp(1.1rem, 3vw, 1.6rem);">
+      <span class="text-white/60 font-light tracking-widest uppercase text-sm">I'm a </span>
+      <span class="text-portfolio-orange font-bold tracking-wider"
+            id="typed-text"
+            data-words="Machine Learning Engineer|AI Developer|Django Engineer|Python Backend Developer">
+        Developer
+      </span>
+      <span class="text-portfolio-orange animate-pulse">_</span>
+    </div>
+
+    <!-- Bio excerpt -->
+    <p class="text-white/50 max-w-xl text-sm md:text-base leading-relaxed hero-animate-4 mb-8 portfolio-subtitle-shadow">
+      {{ profile.bio|truncatewords:25|default:"Machine learning engineer and Django developer building AI products, Python backends, and reliable web applications for real-world use." }}
+    </p>
+
+    <!-- CTA Buttons -->
+    <div class="flex flex-wrap gap-4 hero-animate-5">
+      <a href="#contact" class="btn-portfolio-primary" id="hero-cta-contact">
+        <i class="fas fa-paper-plane text-sm"></i>
+        Hire Me
+      </a>
+      <a href="/projects/" class="btn-portfolio-secondary" id="hero-cta-projects">
+        <i class="fas fa-briefcase text-sm"></i>
+        View Projects
+      </a>
+      {% if profile.github %}
+      <a href="{{ profile.github }}" target="_blank" rel="noopener"
+         class="btn-portfolio-secondary" id="hero-cta-github">
+        <i class="fab fa-github"></i>
+        GitHub
+      </a>
+      {% endif %}
+    </div>
+
+    <!-- Scroll indicator -->
+    <div class="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/30">
+      <span class="text-xs tracking-[0.3em] uppercase">Scroll</span>
+      <div class="w-px h-12 bg-gradient-to-b from-portfolio-orange/60 to-transparent animate-pulse"></div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ====================================================
+     ABOUT SECTION
+     ==================================================== -->
+<section id="about" class="py-28 px-6 bg-portfolio-darker">
+  <div class="max-w-7xl mx-auto">
+    <div class="reveal">
+      <div class="section-label">About Me</div>
+      <h2 class="portfolio-heading text-white mb-16" style="font-size: clamp(2.5rem, 6vw, 4rem);">
+        Building Simple <span class="text-portfolio-orange">&</span> Reliable Systems
+      </h2>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-12 lg:gap-20 items-start">
+      <!-- Left - Avatar & Stats -->
+      <div class="reveal from-left">
+        <div class="relative">
+          <!-- Avatar -->
+          <div class="relative z-10">
+            {% if profile.avatar %}
+            <img src="{{ profile.avatar.url|cloudinary_auto:640 }}" alt="{{ profile.name }}"
+                 class="w-full max-w-sm mx-auto object-cover"
+                 width="640" height="760" decoding="async" loading="lazy"
+                 style="filter: saturate(0.9) contrast(1.05);" />
+            {% else %}
+            <div class="w-full max-w-sm mx-auto bg-portfolio-charcoal flex items-center justify-center"
+                 style="height: 380px; border-left: 3px solid #f97316;">
+              <div class="text-center">
+                <i class="fas fa-user text-portfolio-orange" style="font-size: 6rem; opacity: 0.4;"></i>
+                <p class="text-white/30 text-xs tracking-widest mt-4 uppercase">Profile Photo</p>
+              </div>
+            </div>
+            {% endif %}
+            <!-- Orange accent frame -->
+            <div class="absolute -bottom-4 -right-4 w-full max-w-sm mx-auto"
+                 style="height: 380px; border: 1px solid rgba(249,115,22,0.3); z-index: -1; pointer-events:none;"></div>
+          </div>
+
+          <!-- Stats row -->
+          <div class="grid grid-cols-3 gap-3 mt-10">
+            <div class="stat-box reveal" data-delay="100">
+              <div class="portfolio-heading text-portfolio-orange" style="font-size: 2.5rem;">
+                {{ profile.years_experience|default:"5" }}+
+              </div>
+              <div class="text-white/40 text-xs tracking-widest uppercase mt-1">Years Exp</div>
+            </div>
+            <div class="stat-box reveal" data-delay="200">
+              <div class="portfolio-heading text-portfolio-orange" style="font-size: 2.5rem;">
+                {{ featured_projects|length|default:"20" }}+
+              </div>
+              <div class="text-white/40 text-xs tracking-widest uppercase mt-1">Projects</div>
+            </div>
+            <div class="stat-box reveal" data-delay="300">
+              <div class="portfolio-heading text-portfolio-orange" style="font-size: 2.5rem;">100%</div>
+              <div class="text-white/40 text-xs tracking-widest uppercase mt-1">dedicated
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right - Bio -->
+      <div class="reveal from-right">
+        <div class="about-card mb-8">
+          <h3 class="portfolio-heading text-portfolio-orange mb-4" style="font-size: 1.4rem; letter-spacing: 0.15em;">
+            Who Am I?
+          </h3>
+          <p class="text-white/70 leading-relaxed text-sm md:text-base">
+            {{ profile.bio|default:"I'm Portfolio Owner, a machine learning engineer and Django developer based in Remote. I build AI-powered applications, Python backends, ML workflows, and production-ready software with a strong focus on reliability and clean architecture." }}
+          </p>
+        </div>
+
+        <div class="about-card mb-8">
+          <h3 class="portfolio-heading text-portfolio-orange mb-4" style="font-size: 1.1rem; letter-spacing: 0.15em;">
+            What I Work On
+          </h3>
+          <p class="text-white/70 leading-relaxed text-sm md:text-base">
+            I work on machine learning projects, AI assistants, Django applications, Python APIs, and full-stack software systems. If someone is searching for Portfolio Owner, a machine learning engineer in Remote, or an AI-focused Python developer, this portfolio is the best place to explore my work.
+          </p>
+        </div>
+
+        <!-- Info list -->
+        <div class="space-y-3 mb-8">
+          {% if profile.location %}
+          <div class="flex items-center gap-4">
+            <div class="flex items-center justify-center w-8 h-8 bg-portfolio-orange/10 border border-portfolio-orange/30">
+              <i class="fas fa-map-marker-alt text-portfolio-orange text-xs"></i>
+            </div>
+            <div>
+              <span class="text-white/30 text-xs uppercase tracking-widest">Location</span>
+              <p class="text-white text-sm font-medium">{{ profile.location }}</p>
+            </div>
+          </div>
+          {% endif %}
+          {% if profile.email %}
+          <div class="flex items-center gap-4">
+            <div class="flex items-center justify-center w-8 h-8 bg-portfolio-orange/10 border border-portfolio-orange/30">
+              <i class="fas fa-envelope text-portfolio-orange text-xs"></i>
+            </div>
+            <div>
+              <span class="text-white/30 text-xs uppercase tracking-widest">Email</span>
+              <p class="text-white text-sm font-medium">{{ profile.email }}</p>
+            </div>
+          </div>
+          {% endif %}
+        </div>
+
+        <!-- Social links -->
+        <div class="flex gap-3">
+          {% if profile.github %}
+          <a href="{{ profile.github }}" target="_blank" class="social-link" id="about-github">
+            <i class="fab fa-github"></i>
+          </a>
+          {% endif %}
+          {% if profile.linkedin %}
+          <a href="{{ profile.linkedin }}" target="_blank" class="social-link" id="about-linkedin">
+            <i class="fab fa-linkedin-in"></i>
+          </a>
+          {% endif %}
+          {% if profile.twitter %}
+          <a href="{{ profile.twitter }}" target="_blank" class="social-link" id="about-twitter">
+            <i class="fab fa-x-twitter"></i>
+          </a>
+          {% endif %}
+          {% if profile.resume_url %}
+          <a href="{{ profile.resume_url }}" target="_blank"
+             class="btn-portfolio-primary text-sm ml-auto" id="about-resume">
+            <i class="fas fa-download text-xs"></i> Download CV
+          </a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ====================================================
+     SKILLS SECTION
+     ==================================================== -->
+<section id="skills" class="py-28 px-6"
+         style="background: linear-gradient(180deg, #0a0a0a 0%, #0f0800 50%, #0a0a0a 100%);">
+  <div class="max-w-7xl mx-auto">
+    <div class="reveal text-center mb-16">
+      <div class="section-label mx-auto justify-center">My Skills</div>
+      <h2 class="portfolio-heading text-white" style="font-size: clamp(2.5rem, 6vw, 4rem);">
+        Tools & <span class="text-portfolio-orange">Technologies</span>
+      </h2>
+    </div>
+
+    {% if skills_by_category %}
+    <div class="grid md:grid-cols-2 gap-10">
+      {% for category, skills in skills_by_category.items %}
+      <div class="reveal" data-delay="{{ forloop.counter0 }}00">
+        <div class="skill-category-header">
+          <i class="fas
+            {% if 'Frontend' in category %}fa-palette
+            {% elif 'Backend' in category %}fa-server
+            {% elif 'Database' in category %}fa-database
+            {% elif 'Tools' in category %}fa-tools
+            {% else %}fa-star{% endif %}
+            mr-2"></i>
+          {{ category }}
+        </div>
+        <div class="flex flex-wrap gap-3 mt-6 mb-8">
+          {% for skill in skills %}
+          <div class="flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 text-sm text-white/80 hover:text-white hover:border-portfolio-orange/50 hover:bg-portfolio-orange/10 transition-all duration-300 rounded-md">
+            {% if skill.icon_class %}
+              <i class="{{ skill.icon_class }}"></i>
+            {% else %}
+              {% if 'Python' in skill.name %}<i class="fab fa-python text-blue-400"></i>
+              {% elif 'Django' in skill.name %}<i class="fas fa-server text-green-500"></i>
+              {% elif 'JavaScript' in skill.name or 'JS' in skill.name %}<i class="fab fa-js text-yellow-400"></i>
+              {% elif 'React' in skill.name %}<i class="fab fa-react text-blue-400"></i>
+              {% elif 'HTML' in skill.name %}<i class="fab fa-html5 text-orange-500"></i>
+              {% elif 'CSS' in skill.name or 'Tailwind' in skill.name %}<i class="fab fa-css3-alt text-blue-500"></i>
+              {% elif 'Docker' in skill.name %}<i class="fab fa-docker text-blue-500"></i>
+              {% elif 'Git' in skill.name %}<i class="fab fa-git-alt text-orange-500"></i>
+              {% elif 'SQL' in skill.name or 'Postgre' in skill.name or 'MySQL' in skill.name %}<i class="fas fa-database text-blue-300"></i>
+              {% elif 'Node' in skill.name %}<i class="fab fa-node-js text-green-500"></i>
+              {% elif 'AWS' in skill.name %}<i class="fab fa-aws text-orange-400"></i>
+              {% else %}<i class="fas fa-code text-white/50"></i>{% endif %}
+            {% endif %}
+            <span>{{ skill.name }}</span>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-20">
+      <i class="fas fa-tools text-portfolio-orange/20" style="font-size: 4rem;"></i>
+      <p class="text-white/30 mt-4 tracking-widest uppercase text-sm">Skills Arsenal Loading...</p>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+
+<!-- ====================================================
+     FEATURED PROJECTS SECTION
+     ==================================================== -->
+<section id="projects" class="py-28 px-6 bg-portfolio-darker">
+  <div class="max-w-7xl mx-auto">
+    <div class="reveal flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+      <div>
+        <div class="section-label">Featured Work</div>
+        <h2 class="portfolio-heading text-white" style="font-size: clamp(2.5rem, 6vw, 4rem);">
+          Selected <span class="text-portfolio-orange">Projects</span>
+        </h2>
+      </div>
+      <a href="/projects/" class="btn-portfolio-secondary text-sm whitespace-nowrap" id="view-all-projects">
+        <i class="fas fa-arrow-right text-xs"></i>
+        View All
+      </a>
+    </div>
+
+    {% if featured_projects %}
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {% for project in featured_projects %}
+      <div class="project-card reveal" data-delay="{{ forloop.counter0 }}00">
+        <!-- Image -->
+        <div class="project-card-image">
+          {% if project.image %}
+          <img src="{{ project.image.url|cloudinary_auto:720 }}" alt="{{ project.title }}" loading="lazy" decoding="async" />
+          {% else %}
+          <div class="project-no-image">
+            <span>*</span>
+          </div>
+          {% endif %}
+          <!-- Hover overlay -->
+          <div class="project-overlay">
+            {% if project.screenshot_count > 0 %}
+            <div class="absolute top-2 left-2 px-2 py-0.5 bg-black/60 text-[8px] uppercase tracking-widest text-white/70 border border-white/10">
+              +{{ project.screenshot_count }} Shots
+            </div>
+            {% endif %}
+            {% if project.live_url %}
+            <a href="{{ project.live_url }}" target="_blank" rel="noopener"
+               class="flex items-center justify-center w-10 h-10 bg-portfolio-orange text-black hover:bg-portfolio-gold transition-colors"
+               id="project-{{ project.id }}-live" aria-label="Live demo">
+              <i class="fas fa-external-link-alt text-sm"></i>
+            </a>
+            {% endif %}
+            {% if project.github_url %}
+            <a href="{{ project.github_url }}" target="_blank" rel="noopener"
+               class="flex items-center justify-center w-10 h-10 border border-white/40 text-white hover:border-portfolio-orange hover:text-portfolio-orange transition-colors"
+               id="project-{{ project.id }}-github" aria-label="GitHub">
+              <i class="fab fa-github text-sm"></i>
+            </a>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Content -->
+        <div class="p-5">
+          {% if project.category %}
+          <span class="text-xs text-portfolio-orange/70 tracking-widest uppercase font-semibold">
+            {{ project.category.name }}
+          </span>
+          {% endif %}
+          <h3 class="text-white font-bold text-base mt-1 mb-2 leading-tight">
+            <a href="{% url 'project_detail' project.slug %}" class="hover:text-portfolio-orange transition-colors">
+              {{ project.title }}
+            </a>
+          </h3>
+          <p class="text-white/50 text-xs leading-relaxed mb-4">{{ project.short_description }}</p>
+
+          <!-- Tech stack -->
+          {% if project.tech_stack %}
+          <div class="flex flex-wrap gap-1.5">
+            {% for tech in project.get_tech_list %}
+            <span class="tech-badge">{{ tech }}</span>
+            {% endfor %}
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-20">
+      <i class="fas fa-briefcase text-portfolio-orange/20" style="font-size: 4rem;"></i>
+      <p class="text-white/30 mt-4 tracking-widest uppercase text-sm">More Projects Incoming</p>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+
+<!-- ====================================================
+     CONTACT SECTION
+     ==================================================== -->
+<section id="contact" class="py-28 px-6"
+         style="background: radial-gradient(ellipse at bottom center, rgba(249,115,22,0.06) 0%, #0a0a0a 70%);">
+  <div class="max-w-6xl mx-auto">
+    <div class="reveal text-center mb-16">
+      <div class="section-label mx-auto justify-center">Get In Touch</div>
+      <h2 class="portfolio-heading text-white" style="font-size: clamp(2.5rem, 6vw, 4rem);">
+        Start A <span class="text-portfolio-orange">Mission</span>
+      </h2>
+      <p class="text-white/40 max-w-xl mx-auto text-sm mt-4 tracking-wide">
+        Have a project in mind? Want to collaborate or just say hello?
+        Drop me a message and I'll get back to you.
+      </p>
+    </div>
+
+    <div class="grid md:grid-cols-5 gap-12">
+      <!-- Contact Info -->
+      <div class="md:col-span-2 reveal from-left">
+        <div class="space-y-6 mb-10">
+          {% if profile.email %}
+          <div class="flex items-start gap-5">
+            <div class="flex items-center justify-center w-12 h-12 bg-portfolio-orange/10 border border-portfolio-orange/30 flex-shrink-0">
+              <i class="fas fa-envelope text-portfolio-orange"></i>
+            </div>
+            <div>
+              <p class="text-white/40 text-xs uppercase tracking-widest mb-1">Email</p>
+              <a href="mailto:{{ profile.email }}" class="text-white font-medium hover:text-portfolio-orange transition-colors">
+                {{ profile.email }}
+              </a>
+            </div>
+          </div>
+          {% endif %}
+          {% if profile.location %}
+          <div class="flex items-start gap-5">
+            <div class="flex items-center justify-center w-12 h-12 bg-portfolio-orange/10 border border-portfolio-orange/30 flex-shrink-0">
+              <i class="fas fa-map-marker-alt text-portfolio-orange"></i>
+            </div>
+            <div>
+              <p class="text-white/40 text-xs uppercase tracking-widest mb-1">Location</p>
+              <p class="text-white font-medium">{{ profile.location }}</p>
+            </div>
+          </div>
+          {% endif %}
+          <div class="flex items-start gap-5">
+            <div class="flex items-center justify-center w-12 h-12 bg-portfolio-orange/10 border border-portfolio-orange/30 flex-shrink-0">
+              <i class="fas fa-clock text-portfolio-orange"></i>
+            </div>
+            <div>
+              <p class="text-white/40 text-xs uppercase tracking-widest mb-1">Response Time</p>
+              <p class="text-white font-medium">Within 24 hours</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Social links -->
+        <div class="orange-line"></div>
+        <p class="text-white/40 text-xs uppercase tracking-widest mb-4">Find Me On</p>
+        <div class="flex gap-3">
+          {% if profile.github %}<a href="{{ profile.github }}" target="_blank" class="social-link" id="contact-github"><i class="fab fa-github"></i></a>{% endif %}
+          {% if profile.linkedin %}<a href="{{ profile.linkedin }}" target="_blank" class="social-link" id="contact-linkedin"><i class="fab fa-linkedin-in"></i></a>{% endif %}
+          {% if profile.twitter %}<a href="{{ profile.twitter }}" target="_blank" class="social-link" id="contact-twitter"><i class="fab fa-x-twitter"></i></a>{% endif %}
+        </div>
+      </div>
+
+      <!-- Form -->
+      <div class="md:col-span-3 reveal from-right">
+        <form method="post" action="#contact" id="contact-form"
+              style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 2rem;">
+          {% csrf_token %}
+          <div class="grid md:grid-cols-2 gap-5 mb-5">
+            <div>
+              <label for="contact-name" class="contact-input-label">Name</label>
+              {{ contact_form.name }}
+              {% if contact_form.name.errors %}
+              <p class="text-red-400 text-xs mt-1">{{ contact_form.name.errors.0 }}</p>
+              {% endif %}
+            </div>
+            <div>
+              <label for="contact-email" class="contact-input-label">Email</label>
+              {{ contact_form.email }}
+              {% if contact_form.email.errors %}
+              <p class="text-red-400 text-xs mt-1">{{ contact_form.email.errors.0 }}</p>
+              {% endif %}
+            </div>
+          </div>
+          <div class="mb-5">
+            <label for="contact-subject" class="contact-input-label">Subject</label>
+            {{ contact_form.subject }}
+            {% if contact_form.subject.errors %}
+            <p class="text-red-400 text-xs mt-1">{{ contact_form.subject.errors.0 }}</p>
+            {% endif %}
+          </div>
+          <div class="mb-6">
+            <label for="contact-message" class="contact-input-label">Message</label>
+            {{ contact_form.message }}
+            {% if contact_form.message.errors %}
+            <p class="text-red-400 text-xs mt-1">{{ contact_form.message.errors.0 }}</p>
+            {% endif %}
+          </div>
+          <button type="submit" id="submit-btn"
+                  class="btn-portfolio-primary w-full justify-center text-base">
+            <i class="fas fa-paper-plane text-sm"></i>
+            Send Message
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

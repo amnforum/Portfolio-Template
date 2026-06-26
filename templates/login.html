@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Login - {{ global_profile.name|default:"Portfolio" }}{% endblock %}
+
+{% block content %}
+<section class="min-h-screen flex items-center justify-center px-6 relative overflow-hidden"
+         style="background: radial-gradient(ellipse at center, rgba(249,115,22,0.04) 0%, #0a0a0a 70%);">
+  <div class="max-w-md w-full z-10">
+    <div class="text-center mb-10">
+      <div class="section-label mb-2">Access Grid</div>
+      <h1 class="portfolio-heading text-white text-4xl">Enter <span class="text-portfolio-orange">Network</span></h1>
+      <p class="text-white/40 text-xs mt-3 uppercase tracking-widest">Identify yourself to access the AI Walkthrough Agent.</p>
+    </div>
+
+    <form method="post" class="p-8" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05);">
+        {% csrf_token %}
+        <div class="mb-6">
+            <label for="username" class="contact-input-label">Codename / Username</label>
+            <input type="text" name="username" id="username" required autocomplete="off"
+                   class="w-full bg-black/50 border border-white/10 text-white text-sm px-4 py-3
+                          focus:outline-none focus:border-portfolio-orange transition-colors"
+                   placeholder="Enter a username...">
+        </div>
+        <button type="submit" class="btn-portfolio-primary w-full justify-center">
+            <i class="fas fa-sign-in-alt text-sm"></i> Login
+        </button>
+    </form>
+  </div>
+</section>
+{% endblock %}

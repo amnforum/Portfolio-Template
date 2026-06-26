@@ -1,0 +1,23 @@
+# Only ignore local dev artifacts and media
+venv/
+.venv/
+env/
+.env/
+node_modules/
+media/
+knowledge_docs/
+db.sqlite3
+.git/
+.vscode/
+.idea/
+*.pyc
+__pycache__/
+*.zip
+*.tar.gz
+
+# Ensure Vercel sees our build config
+!vercel.json
+!package.json
+!package-lock.json
+!build_static.py
+!static/

@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+{% load static media_optimizations %}
+
+{% block title %}{{ project.title }} | Portfolio Owner Project{% endblock %}
+{% block meta_description %}{{ project.short_description }}{% endblock %}
+{% block canonical %}{{ site_url }}{% url 'project_detail' project.slug %}{% endblock %}
+{% block og_title %}{{ project.title }} | Portfolio Owner{% endblock %}
+{% block og_description %}{{ project.short_description }}{% endblock %}
+{% block tw_title %}{{ project.title }} | Portfolio Owner{% endblock %}
+{% block tw_description %}{{ project.short_description }}{% endblock %}
+{% block og_image %}{% if project.image %}{{ project.image.url|cloudinary_auto:1200 }}{% else %}{{ site_url }}{% static 'images/hero-bg.png' %}{% endif %}{% endblock %}
+{% block tw_image %}{% if project.image %}{{ project.image.url|cloudinary_auto:1200 }}{% else %}{{ site_url }}{% static 'images/hero-bg.png' %}{% endif %}{% endblock %}
+{% block structured_data %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CreativeWork",
+  "name": "{{ project.title|escapejs }}",
+  "description": "{{ project.short_description|escapejs }}",
+  "url": "{{ site_url }}{% url 'project_detail' project.slug %}",
+  "creator": {
+    "@type": "Person",
+    "name": "Portfolio Owner"
+  }{% if project.image %},
+  "image": "{{ project.image.url|cloudinary_auto:1200|escapejs }}"
+  {% endif %}
+}
+</script>
+{% endblock %}
+
+{% block content %}
+<!-- Project Detail Hero -->
+<section class="relative pt-40 pb-20 px-6 overflow-hidden">
+  <div class="absolute inset-0" style="background: linear-gradient(to bottom, rgba(249,115,22,0.06) 0%, #0a0a0a 100%);"></div>
+  <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-portfolio-orange/40 to-transparent"></div>
+  
+  <div class="max-w-7xl mx-auto relative z-10">
+    <a href="{% url 'projects' %}" class="inline-flex items-center gap-2 text-portfolio-orange text-xs uppercase tracking-widest hover:text-white transition-colors mb-8 group">
+      <i class="fas fa-arrow-left group-hover:-translate-x-1 transition-transform"></i> back to projects
+    </a>
+    
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-8">
+      <div class="max-w-3xl">
+        {% if project.category %}
+        <span class="text-xs text-portfolio-orange tracking-[0.3em] uppercase mb-4 block">{{ project.category.name }}</span>
+        {% endif %}
+        <h1 class="portfolio-heading text-white leading-tight mb-4" style="font-size: clamp(3rem, 7vw, 5rem);">
+          {{ project.title }}
+        </h1>
+        <div class="flex flex-wrap gap-4 mt-8">
+          {% if project.live_url %}
+          <a href="{{ project.live_url }}" target="_blank" rel="noopener" class="btn-portfolio-primary">
+            <i class="fas fa-external-link-alt text-sm"></i> Live Demo
+          </a>
+          {% endif %}
+          {% if project.github_url %}
+          <a href="{{ project.github_url }}" target="_blank" rel="noopener" class="btn-portfolio-secondary">
+            <i class="fab fa-github text-sm"></i> Source Code
+          </a>
+          {% endif %}
+        </div>
+      </div>
+      
+      <div class="flex flex-col gap-4 text-right">
+        <div class="uppercase tracking-widest text-[10px] text-white/30">Technologies Used</div>
+        <div class="flex flex-wrap gap-2 justify-end">
+          {% for tech in project.get_tech_list %}
+          <span class="px-3 py-1 bg-white/5 border border-white/10 text-white/70 text-xs tracking-wider">{{ tech }}</span>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Gallery & Description -->
+<section class="pb-28 px-6">
+  <div class="max-w-7xl mx-auto">
+    <div class="grid lg:grid-cols-3 gap-16">
+      
+      <!-- Main Image & Description -->
+      <div class="lg:col-span-2">
+        {% if project.image %}
+        <div class="relative group mb-12 overflow-hidden border border-white/10 shadow-2xl">
+          <img src="{{ project.image.url|cloudinary_auto:1200 }}" alt="{{ project.title }}" class="w-full object-cover transition-transform duration-700 group-hover:scale-105" width="1200" height="675" decoding="async" fetchpriority="high" />
+          <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        </div>
+        {% endif %}
+        
+        <div class="prose prose-invert max-w-none">
+          <h2 class="portfolio-heading text-2xl text-white mb-6 uppercase tracking-widest border-b border-white/10 pb-4">Project Brief</h2>
+          <div class="text-white/70 leading-relaxed space-y-4 text-base md:text-lg">
+            {{ project.full_description|linebreaks|default:project.short_description }}
+          </div>
+        </div>
+      </div>
+      
+      <!-- Sidebar Gallery -->
+      <div class="space-y-12">
+        {% if project.screenshots.all %}
+        <div>
+          <h2 class="portfolio-heading text-xl text-white mb-8 uppercase tracking-widest border-l-4 border-portfolio-orange pl-4">Gallery</h2>
+          <div class="grid grid-cols-1 gap-6">
+            {% for shot in project.screenshots.all %}
+            <div class="group relative overflow-hidden border border-white/5 bg-portfolio-darker aspect-video cursor-zoom-in" 
+                 onclick="openLightbox('{{ shot.image.url|cloudinary_auto:1400 }}')">
+              <img src="{{ shot.image.url|cloudinary_auto:720 }}" alt="{{ shot.caption|default:project.title }}" 
+                   class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" decoding="async" />
+              {% if shot.caption %}
+              <div class="absolute bottom-0 left-0 right-0 p-3 bg-black/80 backdrop-blur-sm transform translateY-full group-hover:translateY-0 transition-transform">
+                <p class="text-[10px] text-white/80 uppercase tracking-widest">{{ shot.caption }}</p>
+              </div>
+              {% endif %}
+              <div class="absolute inset-0 bg-portfolio-orange/0 group-hover:bg-portfolio-orange/10 transition-colors pointer-events-none"></div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+        
+        <!-- Quick Stats -->
+        <div class="bg-white/5 border border-white/10 p-8">
+            <h3 class="portfolio-heading text-lg text-white mb-6 uppercase tracking-widest text-center">Intel</h3>
+            <div class="space-y-4">
+                <div class="flex justify-between border-b border-white/5 pb-2">
+                    <span class="text-white/30 text-[10px] uppercase tracking-widest">Category</span>
+                    <span class="text-white/80 text-xs">{{ project.category|default:"General" }}</span>
+                </div>
+                <div class="flex justify-between border-b border-white/5 pb-2">
+                    <span class="text-white/30 text-[10px] uppercase tracking-widest">Status</span>
+                    <span class="text-portfolio-orange text-xs">Operational</span>
+                </div>
+                <div class="flex justify-between border-b border-white/5 pb-2">
+                    <span class="text-white/30 text-[10px] uppercase tracking-widest">Date</span>
+                    <span class="text-white/80 text-xs">{{ project.created_at|date:"M Y" }}</span>
+                </div>
+            </div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+</section>
+
+<!-- Lightbox Modal -->
+<div id="lightbox" class="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300" onclick="this.classList.add('opacity-0', 'pointer-events-none')">
+    <div class="relative max-w-5xl w-[90%] p-4">
+        <img id="lightbox-img" src="" alt="Zoomed view" class="w-full h-auto border border-white/10 shadow-2xl" />
+        <button class="absolute top-0 right-0 -translate-y-full p-4 text-white hover:text-portfolio-orange transition-colors">
+            <i class="fas fa-times text-2xl"></i>
+        </button>
+    </div>
+</div>
+
+<script>
+    function openLightbox(url) {
+        const lb = document.getElementById('lightbox');
+        const img = document.getElementById('lightbox-img');
+        img.src = url;
+        lb.classList.remove('opacity-0', 'pointer-events-none');
+        lb.classList.add('opacity-100');
+    }
+</script>
+{% endblock %}

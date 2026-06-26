@@ -1,0 +1,277 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}AI Agent - {{ global_profile.name|default:"Portfolio" }}{% endblock %}
+
+{% block extra_head %}
+<style>
+  /* Sleek Chat Styles */
+  .chat-container {
+    height: 70vh;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #f97316 transparent;
+  }
+  .chat-container::-webkit-scrollbar { width: 6px; }
+  .chat-container::-webkit-scrollbar-thumb { background: #f97316; }
+
+  .msg-bubble {
+    max-width: 80%;
+    padding: 1rem 1.25rem;
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+  .msg-human {
+    background: rgba(255,255,255,0.05);
+    border-left: 3px solid #666;
+    color: #eee;
+    align-self: flex-end;
+    margin-left: auto;
+  }
+  .msg-ai {
+    background: rgba(249,115,22,0.1);
+    border-left: 3px solid #f97316;
+    color: #fff;
+    align-self: flex-start;
+  }
+
+  /* Virtual Pet Kurama Avatar */
+  .pet-container {
+    width: 80px;
+    height: 80px;
+    flex-shrink: 0;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .pet-sprite {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 4px 6px rgba(249,115,22,0.4));
+    transition: all 0.3s ease;
+  }
+
+  /* Emotion States - Dynamic Endless Movement */
+  
+  /* 1. Idle (Breathing) */
+  .pet-idle {
+    animation: petBreathe 3s infinite ease-in-out;
+  }
+  @keyframes petBreathe {
+    0%, 100% { transform: scale(1) translateY(0); }
+    50% { transform: scale(1.05, 0.95) translateY(2px); }
+  }
+
+  /* 2. Thinking (Tilted & Floating) */
+  .pet-thinking {
+    animation: petThink 2s infinite ease-in-out;
+    filter: drop-shadow(0 0 15px rgba(250,204,21,0.6)); /* Gold glow */
+  }
+  @keyframes petThink {
+    0%, 100% { transform: rotate(-5deg) translateY(-5px); }
+    50% { transform: rotate(5deg) translateY(-10px); }
+  }
+
+  /* 3. Speaking (Squash & Stretch talking) */
+  .pet-speaking {
+    animation: petSpeak 0.3s infinite alternate ease-in-out;
+  }
+  @keyframes petSpeak {
+    0% { transform: scale(1.05, 0.95) translateY(2px); }
+    100% { transform: scale(0.95, 1.05) translateY(-2px); }
+  }
+
+  /* 4. Shocked / Bragging (Intense Vibration & Big Aura) */
+  .pet-shocked {
+    animation: petShock 0.1s infinite;
+    filter: drop-shadow(0 0 25px rgba(249,115,22,1));
+    transform: scale(1.2);
+  }
+  @keyframes petShock {
+    0% { transform: scale(1.2) translate(1px, 1px); }
+    25% { transform: scale(1.2) translate(-1px, -1px); }
+    50% { transform: scale(1.2) translate(-1px, 1px); }
+    75% { transform: scale(1.2) translate(1px, -1px); }
+    100% { transform: scale(1.2) translate(1px, 1px); }
+  }
+
+  /* Speech Bubble for extra pet feel */
+  .pet-bubble {
+    position: absolute;
+    top: -15px;
+    right: -10px;
+    background: #f97316;
+    color: #000;
+    font-size: 0.7rem;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-weight: bold;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .pet-thinking + .pet-bubble {
+    opacity: 1;
+    content: "?";
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="pt-32 pb-20 px-6 min-h-screen flex flex-col items-center">
+  <div class="max-w-4xl w-full">
+    
+    <!-- Top Header & Pet Area -->
+    <div class="flex items-center gap-6 mb-8">
+      <div class="pet-container">
+         <img src="{% static 'images/kurama_pet.png' %}" id="kurama-sprite" class="pet-sprite pet-idle" alt="Kurama Virtual Pet">
+         <div class="pet-bubble" id="kurama-bubble">?</div>
+      </div>
+      <div>
+        <h1 class="portfolio-heading text-white text-3xl tracking-widest mb-1">Kurama <span class="text-portfolio-orange text-sm border border-portfolio-orange/30 px-2 ml-2">Virtual Assistant</span></h1>
+        <p class="text-white/40 text-xs uppercase tracking-widest">A dynamic entity. Try asking "Who are you?".</p>
+      </div>
+    </div>
+
+    <!-- Chat Box -->
+    <div class="bg-[#0a0a0a] border border-white/5 rounded-sm p-4 flex flex-col relative h-[600px]">
+      
+      <!-- Messages -->
+      <div class="chat-container flex flex-col gap-4 p-4 flex-1" id="chat-box">
+        <div class="flex gap-4">
+          <div class="msg-bubble msg-ai">
+            Hmph. I am Kurama. Why have you summoned me, foolish human? 
+            Ask what you will about this portfolio.
+          </div>
+        </div>
+      </div>
+
+      <!-- Input -->
+      <form id="chat-form" class="mt-4 flex gap-2 border-t border-white/5 pt-4">
+        {% csrf_token %}
+        <input type="hidden" id="session_id" value="{{ session_id }}">
+        <input type="hidden" id="user_id" value="{{ user_id }}">
+        <input type="text" id="chat-input" required autocomplete="off"
+               class="flex-1 bg-black/50 border border-white/10 text-white text-sm px-4 py-3
+                      focus:outline-none focus:border-portfolio-orange transition-colors"
+               placeholder="Ask Kurama a question...">
+        <button type="submit" class="btn-portfolio-primary text-sm px-6 py-0 flex items-center justify-center">
+          <i class="fas fa-paper-plane"></i>
+        </button>
+      </form>
+
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  const form = document.getElementById('chat-form');
+  const input = document.getElementById('chat-input');
+  const chatBox = document.getElementById('chat-box');
+  const sessionId = document.getElementById('session_id').value;
+  const userId = document.getElementById('user_id').value;
+  const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+  
+  // Virtual Pet Controller
+  const petSprite = document.getElementById('kurama-sprite');
+  const petBubble = document.getElementById('kurama-bubble');
+
+  function setPetState(state, text="") {
+    // states: idle, thinking, speaking, shocked
+    petSprite.className = `pet-sprite pet-${state}`;
+    if (text) {
+        petBubble.innerText = text;
+        petBubble.style.opacity = '1';
+    } else {
+        petBubble.style.opacity = '0';
+    }
+  }
+
+  function scrollToBottom() {
+    chatBox.scrollTop = chatBox.scrollHeight;
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const question = input.value.trim();
+    if (!question) return;
+
+    // Trigger thinking state while fetching
+    setPetState('thinking', '?');
+
+    // Append human msg
+    const humanWrapper = document.createElement('div');
+    humanWrapper.className = 'flex gap-4';
+    humanWrapper.innerHTML = `<div class="msg-bubble msg-human">${question}</div>`;
+    chatBox.appendChild(humanWrapper);
+    
+    input.value = '';
+    scrollToBottom();
+
+    // Prepare AI msg container
+    const aiWrapper = document.createElement('div');
+    aiWrapper.className = 'flex gap-4';
+    const aiBubble = document.createElement('div');
+    aiBubble.className = 'msg-bubble msg-ai';
+    aiBubble.innerHTML = '<i class="fas fa-circle-notch fa-spin text-portfolio-orange text-xl"></i>';
+    aiWrapper.appendChild(aiBubble);
+    chatBox.appendChild(aiWrapper);
+    scrollToBottom();
+
+    // Fetch Stream
+    try {
+      const formData = new URLSearchParams();
+      formData.append('question', question);
+      formData.append('session_id', sessionId);
+      formData.append('user_id', userId);
+
+      const response = await fetch('/api/assistant/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': csrfToken
+        },
+        body: formData
+      });
+
+      if (!response.ok) throw new Error('Network error');
+
+      aiBubble.innerHTML = '';
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder("utf-8");
+      
+      // We are receiving tokens, change to speaking state
+      setPetState('speaking', '...');
+      let fullText = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        
+        // Append raw text chunks
+        const chunk = decoder.decode(value, { stream: true });
+        aiBubble.innerHTML += chunk.replace(/\\n/g, '<br>');
+        fullText += chunk;
+        scrollToBottom();
+      }
+      
+      // Analyze final text to determine end reaction
+      let qLower = question.toLowerCase();
+      if (qLower.includes('who are you') || fullText.includes('!')) {
+         setPetState('shocked', '!');
+         setTimeout(() => setPetState('idle'), 3000);
+      } else {
+         setPetState('idle');
+      }
+
+    } catch (err) {
+      aiBubble.innerHTML = "<span class='text-red-500'>Connection failed. Groq API might be missing or network error.</span>";
+      setPetState('idle');
+    }
+  });
+</script>
+{% endblock %}

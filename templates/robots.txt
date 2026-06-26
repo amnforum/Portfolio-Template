@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /assistant/
+Disallow: /assistant-login/
+Disallow: /{{ admin_url|slice:"1:" }}
+Sitemap: {{ site_url }}/sitemap.xml

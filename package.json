@@ -1,0 +1,22 @@
+{
+  "name": "open-portfolio-django",
+  "version": "1.0.0",
+  "description": "Reusable Django portfolio starter with projects, skills, contact forms, and an optional AI assistant.",
+  "private": false,
+  "scripts": {
+    "build:css": "node node_modules/tailwindcss/lib/cli.js -i ./static/css/input.css -o ./static/css/output.css --minify",
+    "watch:css": "node node_modules/tailwindcss/lib/cli.js -i ./static/css/input.css -o ./static/css/output.css --watch",
+    "build:static": "python build_static.py",
+    "sync": "python build_static.py"
+  },
+  "keywords": [
+    "django",
+    "portfolio",
+    "tailwindcss"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "tailwindcss": "^3.4.19"
+  }
+}

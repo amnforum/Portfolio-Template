@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% load static media_optimizations %}
+
+{% block title %}About Portfolio Owner | Machine Learning Engineer and Django Developer{% endblock %}
+{% block meta_description %}Learn about Portfolio Owner, a machine learning engineer and Django developer in Remote building AI applications, Python backends, and reliable web systems.{% endblock %}
+{% block canonical %}{{ site_url }}{% url 'about' %}{% endblock %}
+{% block og_title %}About Portfolio Owner | Machine Learning Engineer{% endblock %}
+{% block og_description %}Background, skills, and work focus of Portfolio Owner, a machine learning engineer and Django developer in Remote.{% endblock %}
+{% block tw_title %}About Portfolio Owner | Machine Learning Engineer{% endblock %}
+{% block tw_description %}Learn about Portfolio Owner's AI, ML, Django, Python, and backend engineering work.{% endblock %}
+{% block og_image %}{% if profile.avatar %}{{ profile.avatar.url|cloudinary_auto:1200 }}{% else %}{{ site_url }}{% static 'images/hero-bg.png' %}{% endif %}{% endblock %}
+{% block tw_image %}{% if profile.avatar %}{{ profile.avatar.url|cloudinary_auto:1200 }}{% else %}{{ site_url }}{% static 'images/hero-bg.png' %}{% endif %}{% endblock %}
+{% block schema_description %}Portfolio Owner is a machine learning engineer and Django developer focused on AI applications, Python backends, and production software systems.{% endblock %}
+{% block structured_data %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "AboutPage",
+  "name": "About Portfolio Owner",
+  "url": "{{ site_url }}{% url 'about' %}",
+  "description": "About Portfolio Owner, machine learning engineer and Django developer in Remote.",
+  "mainEntity": {
+    "@type": "Person",
+    "name": "Portfolio Owner",
+    "jobTitle": "Machine Learning Engineer and AI Developer",
+    "url": "{{ site_url }}/"{% if profile.avatar %},
+    "image": "{{ profile.avatar.url|cloudinary_auto:1200|escapejs }}"
+    {% endif %}
+  }
+}
+</script>
+{% endblock %}
+
+{% block content %}
+<section class="relative pt-40 pb-20 px-6 overflow-hidden">
+  <div class="absolute inset-0" style="background: radial-gradient(ellipse at top center, rgba(249,115,22,0.06) 0%, #0a0a0a 70%);"></div>
+  <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-portfolio-orange/40 to-transparent"></div>
+  <div class="max-w-7xl mx-auto relative z-10">
+    <div class="section-label">About the portfolio owner</div>
+    <h1 class="portfolio-heading portfolio-text-shadow text-white" style="font-size: clamp(3rem, 8vw, 6rem);">
+      Machine Learning <span class="text-portfolio-orange">Engineer</span>
+    </h1>
+    <p class="text-white/50 text-sm md:text-base mt-5 max-w-2xl leading-relaxed">
+      {{ profile.bio|default:"Portfolio Owner builds AI-powered applications, Django backends, Python APIs, machine learning workflows, and reliable web systems for real-world use." }}
+    </p>
+  </div>
+</section>
+
+<section class="pb-28 px-6 bg-portfolio-darker">
+  <div class="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 lg:gap-20 items-start">
+    <div class="reveal from-left">
+      {% if profile.avatar %}
+      <img src="{{ profile.avatar.url|cloudinary_auto:720 }}" alt="Portfolio Owner machine learning engineer profile photo"
+           class="w-full max-w-sm mx-auto object-cover" width="720" height="860" decoding="async"
+           style="filter: saturate(0.9) contrast(1.05);" />
+      {% else %}
+      <div class="w-full max-w-sm mx-auto bg-portfolio-charcoal flex items-center justify-center"
+           style="height: 380px; border-left: 3px solid #f97316;">
+        <div class="text-center">
+          <i class="fas fa-user text-portfolio-orange" style="font-size: 6rem; opacity: 0.4;"></i>
+          <p class="text-white/30 text-xs tracking-widest mt-4 uppercase">Portfolio Owner</p>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+    <div class="reveal from-right">
+      <div class="about-card mb-8">
+        <h2 class="portfolio-heading text-portfolio-orange mb-4" style="font-size: 1.3rem; letter-spacing: 0.15em;">
+          Work Focus
+        </h2>
+        <p class="text-white/70 leading-relaxed text-sm md:text-base">
+          The portfolio owner works across machine learning, AI assistants, Django applications, Python APIs, backend systems, and full-stack software. This portfolio highlights practical engineering work rather than generic demos.
+        </p>
+      </div>
+
+      <div class="about-card mb-8">
+        <h2 class="portfolio-heading text-portfolio-orange mb-4" style="font-size: 1.1rem; letter-spacing: 0.15em;">
+          Quick Details
+        </h2>
+        <div class="space-y-4">
+          {% if profile.location %}
+          <div>
+            <p class="text-white/30 text-xs uppercase tracking-widest">Location</p>
+            <p class="text-white text-sm font-medium">{{ profile.location }}</p>
+          </div>
+          {% endif %}
+          {% if profile.email %}
+          <div>
+            <p class="text-white/30 text-xs uppercase tracking-widest">Email</p>
+            <a href="mailto:{{ profile.email }}" class="text-white text-sm font-medium hover:text-portfolio-orange transition-colors">{{ profile.email }}</a>
+          </div>
+          {% endif %}
+          <div>
+            <p class="text-white/30 text-xs uppercase tracking-widest">Core Areas</p>
+            <p class="text-white text-sm font-medium">Machine Learning, Django, Python, AI Applications, Backend Engineering</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap gap-3">
+        <a href="{% url 'projects' %}" class="btn-portfolio-secondary text-sm">
+          <i class="fas fa-briefcase text-xs"></i> View Projects
+        </a>
+        <a href="{% url 'contact' %}" class="btn-portfolio-primary text-sm">
+          <i class="fas fa-paper-plane text-xs"></i> Contact
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

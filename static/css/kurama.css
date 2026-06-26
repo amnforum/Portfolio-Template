@@ -1,0 +1,510 @@
+/* =======================================================
+   KURAMA.CSS - Virtual Pet & Chat Overlay (Production)
+   ======================================================= */
+
+/* -- CSS Variables -------------------------------------- */
+:root {
+  --panel-width: 420px;
+  --panel-width-mobile: 100vw;
+}
+
+/* -- 1. WIDGET CONTAINER -------------------------------- */
+#kurama-widget {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: clamp(100px, 14vw, 150px);
+    height: auto;
+    aspect-ratio: 1;
+    z-index: 9999;
+    cursor: grab;
+    user-select: none;
+    touch-action: none;
+    animation: widgetFloat 4s ease-in-out infinite;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    background: transparent;
+    /* don't transition left/top during drag */
+    will-change: transform;
+}
+#kurama-widget:active { cursor: grabbing; animation-play-state: paused; }
+
+/* Removed translateX shift to prevent conflict with JS drag coordinates.
+   The widget will now naturally overlay the panel via its high z-index. */
+body.assistant-active #kurama-widget {
+    transform: none;
+}
+
+/* Mobile: hide widget when panel open to save space */
+@media (max-width: 640px) {
+    #kurama-widget {
+        width: clamp(80px, 20vw, 110px);
+        bottom: 12px;
+        right: 12px;
+    }
+    body.assistant-active #kurama-widget {
+        display: flex; /* Keep visible on mobile */
+        bottom: 80px; /* Move up so it doesn't block the input */
+        transform: scale(0.8);
+    }
+}
+
+/* -- Fire / Chakra Burst Reaction -- */
+.state-attacking #kurama-svg {
+    filter: drop-shadow(0 0 15px #f97316) brightness(1.2);
+    animation: chakraBurst 0.3s ease-out;
+}
+
+@keyframes chakraBurst {
+    0% { transform: scale(1); filter: brightness(1); }
+    50% { transform: scale(1.2); filter: brightness(2) drop-shadow(0 0 25px #ea580c); }
+    100% { transform: scale(1); filter: brightness(1.2) drop-shadow(0 0 15px #f97316); }
+}
+
+@keyframes widgetFloat {
+    0%, 100% { transform: translateY(0px); }
+    50%       { transform: translateY(-8px); }
+}
+/* Keep animation active or subtle during assistant mode */
+body.assistant-active #kurama-widget {
+    /* animation: none; */ /* Removing this to allow floating */
+}
+
+#kurama-svg {
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: visible;
+}
+
+/* -- 1.b ASSISTANT PANEL ------------------------------ */
+#assistant-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: var(--panel-width, 420px);
+    max-width: 100vw;
+    height: 100vh;
+    background: #0a0a0a;
+    border-left: 1px solid rgba(249,115,22,0.3);
+    display: flex;
+    flex-direction: column;
+    z-index: 5000;   /* high enough above content, below widget */
+    transform: translateX(100%);
+    transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: -10px 0 40px rgba(0,0,0,0.9);
+    overflow: hidden;
+}
+body.assistant-active #assistant-panel {
+    transform: translateX(0);
+}
+
+/* Full-width on mobile */
+@media (max-width: 640px) {
+    #assistant-panel {
+        width: 100vw !important;
+        --panel-width: 100vw;
+        height: 100%; /* solid height for mobile browsers */
+    }
+    body.assistant-active #main-nav {
+        width: 100% !important;   /* nav stays full width on mobile */
+    }
+    body.assistant-active {
+        overflow: hidden; /* Lock scroll when chat open on mobile */
+    }
+}
+
+/* -- Panel resize handle ------------------------------- */
+#assistant-resizer {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 8px;
+    cursor: col-resize;
+    background: transparent;
+    z-index: 20;
+    transition: background 0.2s;
+    -webkit-user-select: none;
+    user-select: none;
+}
+#assistant-resizer::after {
+    content: '';
+    position: absolute;
+    left: 2px; top: 50%;
+    transform: translateY(-50%);
+    width: 4px; height: 40px;
+    border-radius: 4px;
+    background: rgba(249,115,22, 0.3);
+    transition: background 0.2s;
+}
+#assistant-resizer:hover::after,
+#assistant-resizer:active::after {
+    background: rgba(249,115,22, 0.8);
+}
+
+/* -- Nav width sync when panel open ------------------- */
+body.assistant-active #main-nav {
+    width: calc(100% - var(--panel-width, 420px));
+    transition: width 0.1s linear;
+}
+
+/* -- 1.c NAV ------------------------------------------- */
+#main-nav {
+    background: transparent;
+    transition: background 0.3s, backdrop-filter 0.3s, width 0.1s;
+}
+#main-nav.nav-scrolled {
+    background: rgba(5,5,5,0.96);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid rgba(249,115,22,0.15);
+}
+
+/* -- 2. CHAT UI ---------------------------------------- */
+.chat-header {
+    background: linear-gradient(to right, #111, #0a0500);
+    padding: 0.875rem 1rem 0.875rem 1.25rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(249,115,22,0.2);
+    flex-shrink: 0;
+}
+
+.chat-container {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    scroll-behavior: smooth;
+    overscroll-behavior: contain;
+}
+.chat-container::-webkit-scrollbar { width: 5px; }
+.chat-container::-webkit-scrollbar-track { background: #111; }
+.chat-container::-webkit-scrollbar-thumb { background: #ea580c; border-radius: 4px; }
+
+.chat-input-wrapper {
+    padding: 0.75rem 1rem;
+    padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px));
+    background: #0a0a0a;
+    border-top: 1px solid rgba(249,115,22,0.2);
+    flex-shrink: 0;
+}
+.chat-input-form { display: flex; gap: 0.5rem; }
+
+#chat-input {
+    flex: 1;
+    min-width: 0;       /* prevent flex overflow on small panels */
+    background: rgba(0,0,0,0.7);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #fff;
+    font-size: 0.875rem;
+    padding: 0.625rem 0.75rem;
+    outline: none;
+    transition: border-color 0.2s;
+    border-radius: 4px;
+}
+#chat-input:focus { border-color: #ea580c; }
+#chat-input:disabled {
+    color: #9ca3af;
+    cursor: not-allowed;
+    background: rgba(20,20,20,0.8);
+}
+
+#chat-send {
+    flex-shrink: 0;
+    background: #ea580c;
+    color: #fff;
+    border: none;
+    padding: 0 1rem;
+    font-size: 0.875rem;
+    font-weight: 700;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+#chat-send:hover { background: #f97316; }
+#chat-send:disabled {
+    cursor: not-allowed;
+    background: #7c2d12;
+}
+#chat-send.chat-stop-button {
+    background: #991b1b;
+}
+#chat-send.chat-stop-button:hover {
+    background: #b91c1c;
+}
+
+/* -- Typing indicator ----------------------------------- */
+#kurama-typing {
+    padding: 0.25rem 1rem;
+    font-size: 0.75rem;
+    color: #ea580c;
+    font-style: italic;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    animation: typingPulse 1.2s ease-in-out infinite;
+    flex-shrink: 0;
+}
+.typing-dots::after {
+    content: '.';
+    animation: typingDots 1.2s steps(3, end) infinite;
+}
+@keyframes typingDots {
+    0% { content: '.'; }
+    33% { content: '..'; }
+    66% { content: '...'; }
+    100% { content: '.'; }
+}
+@keyframes typingPulse {
+    0%,100% { opacity: 0.5; }
+    50%      { opacity: 1; }
+}
+
+/* -- Message bubbles ----------------------------------- */
+.msg-bubble {
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    max-width: 90%;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    animation: fadeInBubble 0.25s ease-out;
+}
+@keyframes fadeInBubble {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+.msg-human {
+    align-self: flex-end;
+    background: #1a1a1a;
+    color: #ddd;
+    border: 1px solid #333;
+}
+.msg-ai {
+    align-self: flex-start;
+    background: #2a1100;
+    color: #f9ceb6;
+    border: 1px solid rgba(234,88,12,0.4);
+    border-left: 3px solid #ea580c;
+}
+.msg-ai p + p {
+    margin-top: 0.65rem;
+}
+.msg-ai ul,
+.msg-ai ol {
+    margin: 0.55rem 0 0.7rem 1.1rem;
+    padding-left: 0.4rem;
+}
+.msg-ai ul {
+    list-style: disc;
+}
+.msg-ai ol {
+    list-style: decimal;
+}
+.msg-ai li {
+    margin: 0.3rem 0;
+    padding-left: 0.15rem;
+}
+.msg-ai strong {
+    color: #fff7ed;
+    font-weight: 700;
+}
+.chat-muted {
+    color: #fdba74;
+    font-size: 0.82rem;
+}
+.chat-generating {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #f9ceb6;
+    font-size: 0.82rem;
+}
+.chat-loading-bar {
+    position: relative;
+    height: 3px;
+    margin-top: 0.65rem;
+    overflow: hidden;
+    border-radius: 999px;
+    background: rgba(249, 115, 22, 0.15);
+}
+.chat-loading-bar span {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 45%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, rgba(249,115,22,0.15), #f97316, rgba(255,247,237,0.95));
+    animation: chatLoadingSweep 1.05s ease-in-out infinite;
+}
+@keyframes chatLoadingSweep {
+    0% { transform: translateX(-115%); }
+    100% { transform: translateX(235%); }
+}
+.chat-action-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-top: 0.35rem;
+    padding: 0.45rem 0.7rem;
+    color: #fff7ed;
+    background: rgba(234, 88, 12, 0.25);
+    border: 1px solid rgba(249, 115, 22, 0.65);
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: background 0.18s ease, transform 0.18s ease;
+}
+.chat-action-link:hover {
+    background: rgba(234, 88, 12, 0.42);
+    transform: translateY(-1px);
+}
+
+/* -- 3. SVG ANIMATIONS (VPet style) ------------------- */
+.cute-fox-body {
+    animation: cuteBodyBreathe 2.5s ease-in-out infinite;
+    transform-origin: 100px 150px;
+}
+@keyframes cuteBodyBreathe {
+    0%, 100% { transform: scale(1); }
+    50%       { transform: scale(1.04); }
+}
+
+.cute-fox-head {
+    animation: cuteHeadBob 2.5s ease-in-out infinite;
+    transform-origin: 100px 95px;
+}
+@keyframes cuteHeadBob {
+    0%, 100% { transform: rotate(-1.5deg); }
+    50%       { transform: translateY(3px) rotate(1.5deg); }
+}
+
+/* Tails - staggered independent shake */
+.cute-tail { animation: cuteTailWave 3s ease-in-out infinite; }
+.tail-1 { animation-delay: 0.00s; transform-origin: 100px 155px; }
+.tail-2 { animation-delay: 0.18s; transform-origin: 100px 155px; }
+.tail-3 { animation-delay: 0.36s; transform-origin: 100px 155px; }
+.tail-4 { animation-delay: 0.54s; transform-origin: 100px 155px; }
+.tail-5 { animation-delay: 0.72s; transform-origin: 100px 155px; }
+.tail-6 { animation-delay: 0.90s; transform-origin: 100px 155px; }
+.tail-7 { animation-delay: 1.08s; transform-origin: 100px 155px; }
+.tail-8 { animation-delay: 1.26s; transform-origin: 100px 155px; }
+.tail-9 { animation-delay: 1.44s; transform-origin: 100px 155px; }
+@keyframes cuteTailWave {
+    0%, 100% { transform: rotate(-6deg); }
+    50%       { transform: rotate(6deg); }
+}
+
+/* Eye blink */
+.cute-fox-eye-l, .cute-fox-eye-r {
+    animation: cuteBlink 4.5s infinite;
+    transform-origin: center center;
+}
+@keyframes cuteBlink {
+    0%, 93%, 100% { transform: scaleY(1); }
+    96%            { transform: scaleY(0.06); }
+}
+
+/* Ear twitch */
+.cute-fox-ear-l { animation: cuteEarTwitchL 5s infinite; transform-origin: 62px 55px; }
+.cute-fox-ear-r { animation: cuteEarTwitchR 5s infinite 2.5s; transform-origin: 138px 55px; }
+@keyframes cuteEarTwitchL {
+    0%, 85%, 100% { transform: rotate(0deg); }
+    90%            { transform: rotate(-14deg); }
+    95%            { transform: rotate(5deg); }
+}
+@keyframes cuteEarTwitchR {
+    0%, 85%, 100% { transform: rotate(0deg); }
+    90%            { transform: rotate(14deg); }
+    95%            { transform: rotate(-5deg); }
+}
+
+/* -- 4. MOOD STATES ------------------------------------ */
+.state-happy .cute-tail { animation-duration: 1s; }
+.state-happy .cute-fox-eye-l,
+.state-happy .cute-fox-eye-r { filter: brightness(1.5) drop-shadow(0 0 6px #fca5a5); }
+
+.state-angry .cute-tail { animation: angryStiffTail 0.3s infinite; }
+.state-angry .cute-fox-eye-l,
+.state-angry .cute-fox-eye-r { animation: angryEye 0.1s infinite; filter: drop-shadow(0 0 10px #f00) brightness(1.8); }
+.state-angry .cute-fox-head  { animation: cuteAngryShake 0.15s infinite; }
+@keyframes angryEye {
+    0%,100% { transform: scaleY(0.8) scaleX(1.1); }
+    50%     { transform: scaleY(0.8) scaleX(1.1) translateX(1px); }
+}
+@keyframes angryStiffTail {
+    0%,100% { transform: rotate(-1deg); }
+    50%     { transform: rotate(1deg); }
+}
+@keyframes cuteAngryShake {
+    0%,100% { transform: translateX(-1px) translateY(-1px); }
+    50%     { transform: translateX(1px) translateY(1px); }
+}
+
+.state-sleep .cute-fox-eye-l,
+.state-sleep .cute-fox-eye-r { transform: scaleY(0.06); animation: none; }
+.state-sleep .cute-fox-body  { animation: cuteDeepBreathing 5s ease-in-out infinite; }
+.state-sleep .cute-tail      { animation: cuteSlowTail 7s ease-in-out infinite; }
+.state-sleep .cute-fox-head  { animation: sleepHeadBob 5s ease-in-out infinite; }
+@keyframes sleepHeadBob {
+    0%,100% { transform: rotate(6deg) translateY(5px); }
+    50%     { transform: rotate(8deg) translateY(7px); }
+}
+@keyframes cuteDeepBreathing {
+    0%,100% { transform: scaleY(0.97) translateY(2px); }
+    50%     { transform: scaleY(1.04) translateY(0); }
+}
+@keyframes cuteSlowTail {
+    0%,100% { transform: rotate(-2deg); }
+    50%     { transform: rotate(2deg); }
+}
+
+/* -- 5. SPEECH BUBBLE ---------------------------------- */
+#kurama-widget-speech {
+    position: absolute;
+    bottom: calc(100% + 4px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #ea580c;
+    color: #000;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 8px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s, transform 0.3s;
+    z-index: 10;
+}
+#kurama-widget-speech.visible {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-4px);
+}
+
+/* -- 6. REGISTRATION MODAL ----------------------------- */
+#registration-modal {
+    transition: opacity 0.3s, visibility 0.3s;
+}
+
+/* -- 7. RESPONSIVE: prevent content being hidden under panel -- */
+/* We DON'T push the main content on desktop - panel overlay is fine.
+   But we DO constrain the nav to not overlap. */
+@media (min-width: 641px) {
+    body.assistant-active #main-content {
+        /* Slight right padding so text isn't under panel edge */
+        padding-right: var(--panel-width, 420px);
+        transition: padding-right 0.1s;
+    }
+}
+@media (max-width: 640px) {
+    body.assistant-active #main-content {
+        padding-right: 0;
+    }
+}

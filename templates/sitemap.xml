@@ -1,0 +1,54 @@
+{% load static media_optimizations %}
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+    <url>
+        <loc>{{ site_url }}/</loc>
+        <image:image>
+            <image:loc>{{ site_url }}{% static 'images/hero-bg.png' %}</image:loc>
+            <image:title>Portfolio Owner machine learning engineer portfolio</image:title>
+            <image:caption>Portfolio hero image for Portfolio Owner, machine learning engineer and Django developer.</image:caption>
+        </image:image>
+        {% if profile.avatar %}
+        <image:image>
+            <image:loc>{{ profile.avatar.url|cloudinary_auto:1200 }}</image:loc>
+            <image:title>Portfolio Owner profile photo</image:title>
+            <image:caption>Portfolio Owner machine learning engineer profile photo.</image:caption>
+        </image:image>
+        {% endif %}
+        <priority>1.0</priority>
+    </url>
+    <url>
+        <loc>{{ site_url }}/about/</loc>
+        {% if profile.avatar %}
+        <image:image>
+            <image:loc>{{ profile.avatar.url|cloudinary_auto:1200 }}</image:loc>
+            <image:title>About Portfolio Owner</image:title>
+            <image:caption>Profile image for Portfolio Owner, machine learning engineer and Django developer.</image:caption>
+        </image:image>
+        {% endif %}
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>{{ site_url }}/projects/</loc>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>{{ site_url }}/contact/</loc>
+        <priority>0.7</priority>
+    </url>
+    {% for project in projects %}
+    <url>
+        <loc>{{ site_url }}/projects/{{ project.slug }}/</loc>
+        <lastmod>{{ project.created_at|date:"c" }}</lastmod>
+        {% if project.image %}
+        <image:image>
+            <image:loc>{{ project.image.url|cloudinary_auto:1200 }}</image:loc>
+            <image:title>{{ project.title }}</image:title>
+            <image:caption>{{ project.short_description }}</image:caption>
+        </image:image>
+        {% endif %}
+        <priority>0.7</priority>
+    </url>
+    {% endfor %}
+</urlset>
